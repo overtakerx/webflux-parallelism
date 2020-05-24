@@ -29,8 +29,11 @@ public class ParallelRepositoryTest {
     Mono<SecondDto> secondDto = monoRepository.getSecondDto();
     Mono error = monoRepository.getErrorDto();
 
-    AllDtos allDtos = Mono.zipDelayError(Arrays.asList(firstDto, secondDto, (Mono<SecondDto>) error),
-        this::combinator).block();
+    AllDtos allDtos = Mono.zipDelayError(Arrays.asList(firstDto,
+        secondDto,
+        (Mono<SecondDto>) error),
+        this::combinator)
+        .block();
 
     assertAll("AllDtos",
         () -> assertThat(allDtos, notNullValue()),
