@@ -46,7 +46,7 @@ public class ParallelRepositoryTest {
     AllDtos allDtos = new AllDtos();
     for (Object dto : dtos) {
       if (dto instanceof String) {
-        // ignore, this is the error
+        // ignore, this is the error or something else
       }
 
       if (dto instanceof FirstDto) {
