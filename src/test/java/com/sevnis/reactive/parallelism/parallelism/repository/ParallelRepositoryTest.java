@@ -3,6 +3,7 @@ package com.sevnis.reactive.parallelism.parallelism.repository;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -29,16 +30,21 @@ public class ParallelRepositoryTest {
     Mono<SecondDto> secondDto = monoRepository.getSecondDto();
     Mono error = monoRepository.getErrorDto();
 
+    long startTime = System.currentTimeMillis();
     AllDtos allDtos = Mono.zipDelayError(Arrays.asList(firstDto, secondDto, (Mono<SecondDto>) error),
         this::combinator).block();
+    long endTime = System.currentTimeMillis();
 
     assertAll("AllDtos",
         () -> assertThat(allDtos, notNullValue()),
         () -> assertThat(allDtos.getFirstDto(), notNullValue()),
         () -> assertThat(allDtos.getFirstDto().getId(), is("10")),
         () -> assertThat(allDtos.getSecondDto(), notNullValue()),
-        () -> assertThat(allDtos.getSecondDto().getId(), is("20"))
+        () -> assertThat(allDtos.getSecondDto().getId(), is("20")),
+        () -> assertThat(Math.round((endTime - startTime) / 1000), is(lessThan(6)))
     );
+
+    System.out.println("Time taken: " + (endTime - startTime) / 1000 + "s");
   }
 
   private AllDtos combinator(Object[] dtos) {
